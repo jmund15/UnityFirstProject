@@ -78,6 +78,10 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+        if (transform.position.y < -5)
+        {
+            gameOver = true;
+        }
         if (playerPup != powerups.NOPOWERUP)
         {
             indicator.gameObject.transform.position = transform.position + new Vector3(0, -0.5f, 0);

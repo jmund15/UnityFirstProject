@@ -52,6 +52,7 @@ public class WaveManager : MonoBehaviour
             finishedLevel = true;
             yield return new WaitForSeconds(1);
         }
+        finishedGame = true; // do something
     }
     void randomWaves(int spendingPoints)
     {

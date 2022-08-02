@@ -6,7 +6,8 @@ using UnityEngine;
 public abstract class Enemy : MonoBehaviour
 {
     public Rigidbody rb;
-    public PlayerController player;
+    private PlayerController player;
+    private SpawnManager enemyCounter;
 
     protected float baseSpeed = 30.0f;
 
@@ -32,6 +33,7 @@ public abstract class Enemy : MonoBehaviour
     // Start is called before the first frame update
     protected virtual void Start()
     {
+        enemyCounter = GameObject.Find("Spawn Manager").GetComponent<SpawnManager>();
         rb = GetComponent<Rigidbody>();
 
         player = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>();
@@ -42,6 +44,7 @@ public abstract class Enemy : MonoBehaviour
     {
         if (transform.position.y < -5)
         {
+            enemyCounter.score += enemyCost;
             Destroy(gameObject);
         }
         playerPos = player.transform.position;
@@ -63,7 +66,7 @@ public abstract class Enemy : MonoBehaviour
     protected virtual void trackingForce(float pull, ForceMode forceMode = ForceMode.Force) // higher the number, stricter the tracking (base tracking = 1)
     {
         Vector3 trackingVec = adjVector(rb.velocity, lookDirection);
-        
+
         if (trackingVec != Vector3.zero)
         {
             rb.AddForce(trackingVec.normalized * baseSpeed * pull, forceMode); // add better player tracking
@@ -108,7 +111,7 @@ public abstract class Enemy : MonoBehaviour
             yield return new WaitUntil(() => (distFromXEdge < dist || distFromZEdge < dist));
             rb.AddForce(baseSpeed * power * (-transform.position.normalized), ForceMode.Impulse); // go towards middle
         }
-        
+
     }
 
     /* This function periodically generates an impulse on the enemy towards the player 
@@ -133,10 +136,10 @@ public abstract class Enemy : MonoBehaviour
              * 2. lookDirection: boost towards player
              * 3. forceMod: boost accounting for current player velocity
              */
-            rb.AddForce( (-rb.velocity) + ((lookDirection + forceMod).normalized * baseSpeed * power), ForceMode.Impulse);
+            rb.AddForce((-rb.velocity) + ((lookDirection + forceMod).normalized * baseSpeed * power), ForceMode.Impulse);
 
             //Debug.Log((-rb.velocity) + ((lookDirection + forceMod).normalized * baseSpeed * power));
-        }        
+        }
     }
 
     protected virtual IEnumerator adjRandomMod(float randLow, float randHigh, float timeSet, System.Action<float> setVal) //set
@@ -146,7 +149,7 @@ public abstract class Enemy : MonoBehaviour
             setVal(Random.Range(randLow, randHigh));
             yield return new WaitForSeconds(Random.Range(timeSet - 1.0f, timeSet + 1.0f));
         }
-        
+
     }
 
     protected virtual IEnumerator bossSpawn(GameObject[] spawns, float spawnCooldown, int pointsPerSpawn = 0)
@@ -177,7 +180,7 @@ public abstract class Enemy : MonoBehaviour
 
         //Debug.Log(trackingDir);
         return new Vector3(trackingDir.x, 0, trackingDir.y);
-    } 
+    }
     //protected virtual IEnumerator impulseReset()
     //{
     //    yield return new WaitForSeconds(Random.Range(impulseCooldown - 2.0f, impulseCooldown + 2.0f));
