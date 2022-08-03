@@ -2,11 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class SpawnManager : MonoBehaviour
 {
-    public TextMeshProUGUI scoreTest;
+    public TextMeshProUGUI scoreText;
     public TextMeshProUGUI gameOverText;
+    public Button restartButton;
 
     public GameObject[] powerups;
     public int powerupSpawnCooldown;
@@ -18,27 +21,19 @@ public class SpawnManager : MonoBehaviour
 
     private float spawnRange = 9;
     public int waveNum;
-    private int oldWaveNum;
-    public int score;
-    private int oldScore;
-
-    // TODO - CHANGE NAME TO GameManager
+    public int maxWave;
+    public bool endLevel;
 
     // Start is called before the first frame update
     void Start()
     {
         waveNum = 1;
-        score = 0;
-        oldWaveNum = waveNum;
-        oldScore = score;
+        
         waver = GameObject.Find("Wave Manager").GetComponent<WaveManager>();
         player = GameObject.Find("Player").GetComponent<PlayerController>();
+
         StartCoroutine(waveLauncher());
         StartCoroutine(powerupSpawner());
-        scoreTest.text = "Wave: 1\nScore: 0";
-        gameOverText.gameObject.SetActive(false);
-        StartCoroutine(gameOver());
-
     }
 
     // Update is called once per frame
@@ -49,16 +44,11 @@ public class SpawnManager : MonoBehaviour
         //    StartCoroutine(waveLauncher(++waveNum));
         //    spawning = true;
         //}
-        if (waveNum != oldWaveNum || score != oldScore)
-        {
-            scoreTest.text = "Wave: " + waveNum + "\nScore: " + score;
-            oldWaveNum = waveNum;
-            oldScore = score;
-        }
+        
     }
     IEnumerator powerupSpawner()
     {
-        while (!waver.finishedGame)
+        while (!player.gameOver && !endLevel)
         {
             int numPowerups = GameObject.FindGameObjectsWithTag("Powerup").Length;
 
@@ -77,7 +67,7 @@ public class SpawnManager : MonoBehaviour
 
     IEnumerator waveLauncher()
     {
-        while (!waver.finishedGame && !player.gameOver)
+        while (!player.gameOver && !endLevel)
         {
             yield return new WaitUntil(() => waver.finishedLevel);
             nextWave = false;
@@ -92,30 +82,20 @@ public class SpawnManager : MonoBehaviour
             //StartCoroutine(nextLevelCountdown()); // add this at some point
             Debug.Log("Waiting to spawn next wave");
             yield return new WaitForSeconds(5); // start countdown until next wave
-            waveNum++;
-            nextWave = true;
+            if (waveNum == maxWave) // for endless, maxWave is set to 0, so this is never true!
+            {
+                endLevel = true;
+            }
+            else
+            {
+                waveNum++;
+                nextWave = true;
+            }
             yield return new WaitForFixedUpdate();
         }
 
     }
 
-    IEnumerator gameOver()
-    {
-        yield return new WaitUntil(() => player.gameOver || waver.finishedGame); // Wait until player falls off the stage or finished level
-
-        if (player.gameOver)
-        {
-            nextWave = false;
-            // IDEA - zoom in to player falling (in slow motion) while game over text fades into view, maybe add some sound effect, game over music as well
-            gameOverText.gameObject.SetActive(true); // display game over text
-        }
-        else // player finished game/level
-        {
-            // IDEA - zoom in to player, jumping/rotating happily, confetti ensues, maybe all of the enemies he defeated are stacked up in the corner.
-        }
-        
-
-    }
     void spawnEnemyWave(GameObject enemy, int numEm) //, int enemyType)
     {
         for (int i = 0; i < numEm; i++)
@@ -123,4 +103,7 @@ public class SpawnManager : MonoBehaviour
             Instantiate(enemy, new Vector3(Random.Range(-spawnRange, spawnRange), 0, Random.Range(-spawnRange, spawnRange)), enemy.transform.rotation);
         }
     }
+
+    
+    
 }

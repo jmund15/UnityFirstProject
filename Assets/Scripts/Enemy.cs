@@ -7,7 +7,7 @@ public abstract class Enemy : MonoBehaviour
 {
     public Rigidbody rb;
     private PlayerController player;
-    private SpawnManager enemyCounter;
+    private GameManager gameManager;
 
     protected float baseSpeed = 30.0f;
 
@@ -33,7 +33,7 @@ public abstract class Enemy : MonoBehaviour
     // Start is called before the first frame update
     protected virtual void Start()
     {
-        enemyCounter = GameObject.Find("Spawn Manager").GetComponent<SpawnManager>();
+        gameManager = GameObject.Find("Game Manager").GetComponent<GameManager>();
         rb = GetComponent<Rigidbody>();
 
         player = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>();
@@ -44,7 +44,7 @@ public abstract class Enemy : MonoBehaviour
     {
         if (transform.position.y < -5)
         {
-            enemyCounter.score += enemyCost;
+            gameManager.score += enemyCost;
             Destroy(gameObject);
         }
         playerPos = player.transform.position;

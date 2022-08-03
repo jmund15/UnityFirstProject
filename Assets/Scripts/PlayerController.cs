@@ -66,6 +66,7 @@ public class PlayerController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        gameOver = false;
         playerPup = powerups.NOPOWERUP; // start game with no powerup
 
         baseColor = gameObject.GetComponent<Renderer>().material.color;

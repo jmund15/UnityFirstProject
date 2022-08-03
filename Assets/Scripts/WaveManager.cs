@@ -23,8 +23,6 @@ public class WaveManager : MonoBehaviour
 
     public bool finishedLevel = false;
 
-    public bool finishedGame = false;
-
     // Start is called before the first frame update
     void Start()
     {
@@ -41,7 +39,7 @@ public class WaveManager : MonoBehaviour
 
     IEnumerator generateLevel()
     {
-        while (spawner.waveNum < 30)
+        while (!spawner.endLevel) // this loop may need adjusted (we may enter loop before endLevel is set true, but nextWave is never set to true, so endlessly waiting. not a big deal, because scene will be reset soon most likely, but still...)
         {
             yield return new WaitUntil(() => spawner.nextWave); // wait until we're ready for next wave;
             level.Clear();
@@ -52,7 +50,6 @@ public class WaveManager : MonoBehaviour
             finishedLevel = true;
             yield return new WaitForSeconds(1);
         }
-        finishedGame = true; // do something
     }
     void randomWaves(int spendingPoints)
     {
