@@ -9,4 +9,4 @@ However, a lot was expanding upon, including:
 * New powerups designed to give user more abilities
 * Spawn Manager is given certain number of "points" that increases each round
   * Each enemy is given a specific spawn "point value" dependent on its strength
-  * * These points are smartly delegated to generate the optimal enemy balls each round
+  * These points are smartly delegated to generate the optimal enemy balls each round
