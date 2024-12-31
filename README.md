@@ -10,3 +10,4 @@ However, a lot was expanding upon, including:
 * Spawn Manager is given certain number of "points" that increases each round
   * Each enemy is given a specific spawn "point value" dependent on its strength
   * These points are smartly delegated to generate the optimal enemy balls each round
+* Endless mode where waves continually spawn once certain conditions (enemies left on screen, etc.) are met.
